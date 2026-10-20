@@ -5,6 +5,6 @@ Project page for **Vector-Quantized World Model: Latent Feedback Motion Planning
 
 - `index.html` – the page
 - `style.css` – styles (light and dark theme)
-- `assets/` – figures cropped from the paper and the paper PDF
+- `assets/` – figures cropped from the paper
 
 The site is static. Serve the repository root (for example with GitHub Pages) or open `index.html` directly.
