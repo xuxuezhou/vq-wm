@@ -75,20 +75,7 @@
       <div class="plate">
         <img src="assets/fig1_overview.png" width="1408" height="1035" alt="Overview of VQ-WM: initial and goal images are encoded into latent states and vector-quantized by controller reachability; the planner searches over vector-quantized states q_init, q_1, q_goal, and a feedback controller drives the robot through each region of attraction R(q) toward z_goal.">
       </div>
-      <figcaption>
-        <strong>Figure 1. Plan over what the controller can reach.</strong> The initial (green) and goal (red)
-        images are encoded into latent states and vector-quantized according to controller reachability, so that
-        each vector-quantized state <span class="math">q</span> is a target the controller is expected to reach from
-        its region of attraction <span class="math">R(q)</span>. The planner performs discrete search over these states
-        with a discrete latent predictor; a continuous controller then drives the robot toward each planned target in
-        turn, correcting deviations with visual feedback.
-        <ul class="legend">
-          <li><i style="background:#1f2a44"></i>Encoding: pretrained, frozen V-JEPA&nbsp;2 encoder maps images to latent states</li>
-          <li><i style="background:#7c3aed"></i>Prediction: discrete latent predictor expands successor codes online</li>
-          <li><i style="background:#e8961e"></i>Planning: breadth-first search for the shortest code path to the goal</li>
-          <li><i style="background:#2457b5"></i>Feedback control: goal-conditioned controller tracks each code, every step</li>
-        </ul>
-      </figcaption>
+      <figcaption><strong>Fig. 1:</strong> Overview of VQ-WM. The initial (green) and goal (red) images are encoded into latent states and vector-quantized according to controller reachability, so that each vector-quantized state serves as a target the controller is expected to reach. The planner performs discrete search over these vector-quantized states using a discrete latent predictor. A continuous controller then drives the robot toward each planned target in turn, using visual feedback to correct deviations along the way.</figcaption>
     </figure>
   </div>
 </section>
@@ -155,10 +142,7 @@
       <div class="plate plate-wide">
         <img src="assets/fig2_pipeline.png" width="2864" height="1420" alt="VQ-WM components and pipeline. (a) Inference: planning over vector-quantized states with the discrete predictor P_Q, a fast controller pi acting every step, and vector quantization phi_Z of the current and goal latents. (b) Training: controller, continuous latent predictor, state codebook construction via greedy set cover, and vector-quantized latent dynamics.">
       </div>
-      <figcaption><strong>Figure 2. Components and pipeline.</strong> (a) Inference encodes the initial and goal images,
-      searches over state codes, and executes the planned targets with visual feedback. (b) Offline training learns the
-      controller and continuous latent predictor, performs state vector quantization using first-passage time, and then
-      learns vector-quantized latent dynamics.</figcaption>
+      <figcaption><strong>Fig. 2:</strong> VQ-WM components and pipeline. (a) Inference encodes the initial and goal images, searches over state codes, and executes the planned targets with visual feedback. (b) Offline training learns the controller and continuous latent predictor, performs state vector quantization using first-passage time, and then learns vector-quantized latent dynamics.</figcaption>
     </figure>
 
     <div class="cols">
@@ -228,18 +212,13 @@
     <div class="plate">
       <img src="assets/fig3_realworld.png" width="1050" height="312" alt="Four photographs of a WidowX AI arm solving the four-disk Tower of Hanoi, from the initial stack on the left rod to the goal stack on the right rod.">
     </div>
-    <figcaption><strong>Figure 3.</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi, from the initial
-    configuration to the goal.</figcaption>
+    <figcaption><strong>Fig. 3:</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi puzzle.</figcaption>
   </figure>
   <figure>
     <div class="plate plate-wide">
       <img src="assets/fig4_realworld_results.png" width="2183" height="541" alt="Bar chart of average task progress for Cosmos Policy, pi 0.5, V-JEPA 2-AC, V-JEPA 2-AC with manual subgoals, and VQ-WM across expert data H1, expert data H15, and non-expert data. VQ-WM reaches 100, 99.6 and 100 percent.">
     </div>
-    <figcaption><strong>Figure 4. Real-world results.</strong> VLA and WAM baselines without runtime search fail to extrapolate
-    from short play subtasks to full-puzzle solutions, whereas VQ-WM composes local behaviors into complete plans and
-    executes them reliably. V-JEPA 2-AC struggles even on H1, suggesting a limited effective planning horizon.
-    V-JEPA 2-AC* receives manually specified subgoals that supply the solution sequence, leaving the model to perform
-    local planning and control. Six test cases, three trials each, one RTX 5080 for inference.</figcaption>
+    <figcaption><strong>Fig. 4:</strong> Real-world results. VLA and WAM baselines without runtime search fail to extrapolate from short play subtasks to full-puzzle solutions, whereas VQ-WM composes local behaviors into complete plans and executes them reliably. V-JEPA 2-AC struggles even on H1, suggesting a limited effective planning horizon. V-JEPA 2-AC* receives manually specified subgoals that supply the solution sequence, leaving the model to perform local planning and control.</figcaption>
   </figure>
   <div class="prose">
     <h3>Expert data</h3>
@@ -280,7 +259,7 @@
         </div>
         <div class="tablewrap">
           <table>
-            <caption>Table I. Long-horizon manipulation success rate (%), mean &plusmn; std.</caption>
+            <caption>TABLE I: Long-horizon Manipulation success rates.</caption>
             <thead><tr><th>Method</th><th>Cube-Easy</th><th>Cube-Hard</th><th>Scene</th></tr></thead>
             <tbody>
               <tr><td>LeWM</td><td>74.0 <span class="pm">&plusmn; 2.8</span></td><td>32.0 <span class="pm">&plusmn; 6.1</span></td><td>42.7 <span class="pm">&plusmn; 1.9</span></td></tr>
@@ -354,7 +333,7 @@
             <summary>Table view</summary>
             <div class="tablewrap">
               <table>
-                <caption>Table II. Walker success rate (%) by observation input.</caption>
+                <caption>TABLE II: Success rate (%) on Walker with different observation inputs.</caption>
                 <thead><tr><th>Method</th><th>Images</th><th>Images + proprio.</th></tr></thead>
                 <tbody>
                   <tr><td>DINO-WM</td><td>12.7 <span class="pm">&plusmn; 3.4</span></td><td>12.0 <span class="pm">&plusmn; 4.9</span></td></tr>
@@ -398,7 +377,7 @@
       <div class="plate">
         <img src="assets/fig5_codebook_ablation.png" width="1050" height="783" alt="Success rate versus codebook size on a log axis from 200 to 5000. First-passage-time codebooks hold near 85 to 90 percent from about 400 to 1500 codes before dropping; Euclidean codebooks peak near 40 percent around 2000 codes.">
       </div>
-      <figcaption><strong>Figure 5.</strong> State vector quantization with different codebook sizes on simulated Tower of Hanoi.</figcaption>
+      <figcaption><strong>Fig. 5:</strong> State vector quantization with different codebook sizes.</figcaption>
     </figure>
   </div>
 </section>
