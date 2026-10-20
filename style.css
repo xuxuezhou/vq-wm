@@ -223,6 +223,9 @@ td .pm { color: var(--muted); font-weight: 400; font-size: 0.85em; }
 /* side by side figure + prose */
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 8px; }
 .split figure { margin: 0; }
+.split-top { align-items: start; }
+.split-top h2 { max-width: none; }
+.split-top .abl-chart { margin-top: -6px; }
 @media (max-width: 820px) { .split { grid-template-columns: 1fr; } }
 
 /* bibtex */
