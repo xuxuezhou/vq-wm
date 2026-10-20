@@ -53,20 +53,11 @@
       <p class="eyebrow">Abstract</p>
       <p>
         Visual world models have shown strong potential for robot planning, yet long-horizon manipulation remains
-        challenging due to compounding prediction errors, large search complexity, and latent plans that the low-level
-        controller cannot reliably reach. In this work, we introduce Vector-Quantized World Model (VQ-WM), a latent
-        feedback motion planning framework that integrates discrete long-horizon search with continuous visual feedback
-        control: a discrete latent predictor models transitions between vector-quantized latent states, allowing the
-        planner to look far ahead and find a shortest path to the goal through discrete search, and a continuous learned
-        controller sequentially reaches the planned states through visual feedback, correcting deviations to mitigate
-        compounding errors. Whereas most vector quantization uses Euclidean distance, we use a novel estimator of the
-        first-passage time as a quasi-metric, which aligns the planning abstraction with the controller&rsquo;s
-        capabilities. We evaluate on the physical robot manipulation of the Tower of Hanoi puzzle: whereas existing
-        state-of-the-art foundation models (VLAs, WAMs) only succeed when the solution trace is in their training
-        dataset, our method achieves 100% success rate with only short-play data, demonstrating its ability to compose
-        long-horizon solutions beyond the short demonstrated trajectories and execute them reliably. Our solution also
-        outperforms the strongest world models by 13.3&ndash;85.3 percentage points on simulation benchmarks spanning
-        manipulation and locomotion, demonstrating consistent progress and new capabilities.
+        challenging: prediction errors compound over autoregressive rollouts, search complexity grows with the horizon,
+        and planners propose latent targets that the low-level controller cannot reliably reach. We introduce VQ-WM, a
+        latent feedback motion planning framework that vector-quantizes the latent space by controller reachability,
+        measured as first-passage time, so a discrete planner can search far ahead over reachable states while a
+        continuous controller tracks each planned state with visual feedback.
       </p>
     </div>
    </div>
