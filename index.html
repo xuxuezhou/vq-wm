@@ -14,7 +14,7 @@
 
 <header class="topbar">
   <div class="wrap topbar-inner">
-    <a class="brand" href="#top">VQ<span>-</span>WM</a>
+    <a class="brand" href="#top"><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span></a>
     <nav>
       <a href="#overview">Overview</a>
       <a href="#method">Method</a>
@@ -29,9 +29,10 @@
 <!-- ================= HERO ================= -->
 <section class="hero" id="top">
   <div class="wrap">
-    <p class="badge">Submitted to ICRA 2027</p>
-    <h1>VQ-WM</h1>
-    <p class="subtitle"><span class="hl">Vector-Quantized World Model:</span> Latent Feedback Motion Planning for Robot Manipulation</p>
+   <div class="hero-text">
+    <p class="badge">In submission</p>
+    <h1><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span></h1>
+    <p class="subtitle"><span class="t-vq">V</span>ector-<span class="t-vq">Q</span>uantized <span class="t-wm">W</span>orld <span class="t-wm">M</span>odel: Latent Feedback Motion Planning for Robot Manipulation</p>
     <p class="authors">
       Xuezhou Xu<sup>*1</sup>, Chung-Pang Wang<sup>*1</sup>, Zhenzhen Li<sup>2</sup>, Benjamin Riviere<sup>1</sup>
     </p>
@@ -48,9 +49,14 @@
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h4M6 11h4"/></svg>
         Paper (PDF)
       </a>
+      <span class="btn btn-arxiv" title="Link will be added when the preprint is on arXiv">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2.5 8h11M9.5 4l4 4-4 4"/></svg>
+        Paper (arXiv)
+      </span>
       <span class="btn btn-disabled" title="Released upon publication">Code &mdash; coming soon</span>
       <span class="btn btn-disabled" title="Released upon publication">Video &mdash; coming soon</span>
     </div>
+   </div>
 
     <figure class="hero-fig">
       <div class="plate">
@@ -283,16 +289,68 @@
             the controller-aware codebook adapts to what it can now reach, and the planner is untouched.
           </p>
         </div>
-        <div class="tablewrap">
-          <table>
-            <caption>Table II. Walker success rate (%) by observation input.</caption>
-            <thead><tr><th>Method</th><th>Images</th><th>Images + proprio.</th></tr></thead>
-            <tbody>
-              <tr><td>DINO-WM</td><td>12.7 <span class="pm">&plusmn; 3.4</span></td><td>12.0 <span class="pm">&plusmn; 4.9</span></td></tr>
-              <tr class="ours"><td>VQ-WM (ours)</td><td>22.0 <span class="pm">&plusmn; 5.9</span></td><td>97.3 <span class="pm">&plusmn; 2.5</span></td></tr>
-            </tbody>
-          </table>
-        </div>
+        <figure class="walker-chart" id="walker-chart">
+          <div class="walker-head">
+            <figcaption><strong>Walker success rate (%)</strong>, mean &plusmn; std over seeds, by observation input.</figcaption>
+            <button class="walker-replay" id="walker-replay" type="button" aria-label="Replay animation">&#8635; Replay</button>
+          </div>
+          <ul class="walker-legend" aria-hidden="true">
+            <li><i class="sw sw-base"></i>DINO-WM</li>
+            <li><i class="sw sw-ours"></i>VQ-WM (ours)</li>
+          </ul>
+          <div class="walker-plot">
+            <svg class="walker-svg" viewBox="0 0 480 330" role="img" aria-labelledby="walker-title walker-desc" font-family="var(--font-body)">
+            <title id="walker-title">Walker success rate by observation input</title>
+            <desc id="walker-desc">Grouped columns. With images only, DINO-WM 12.7% and VQ-WM 22.0%. With images plus proprioception, DINO-WM 12.0% and VQ-WM 97.3%.</desc>
+            <defs><clipPath id="walker-clip"><rect x="0" y="0" width="480" height="280"/></clipPath></defs>
+            <line class="walker-grid walker-base" x1="44" x2="470" y1="280.0" y2="280.0"/>
+            <text class="walker-tick" x="36" y="284.0" text-anchor="end">0%</text>
+            <line class="walker-grid" x1="44" x2="470" y1="220.0" y2="220.0"/>
+            <text class="walker-tick" x="36" y="224.0" text-anchor="end">25%</text>
+            <line class="walker-grid" x1="44" x2="470" y1="160.0" y2="160.0"/>
+            <text class="walker-tick" x="36" y="164.0" text-anchor="end">50%</text>
+            <line class="walker-grid" x1="44" x2="470" y1="100.0" y2="100.0"/>
+            <text class="walker-tick" x="36" y="104.0" text-anchor="end">75%</text>
+            <line class="walker-grid" x1="44" x2="470" y1="40.0" y2="40.0"/>
+            <text class="walker-tick" x="36" y="44.0" text-anchor="end">100%</text>
+            <text class="walker-cat" x="161" y="304" text-anchor="middle">Images</text>
+            <text class="walker-cat" x="351" y="304" text-anchor="middle">Images + proprioception</text>
+            <g clip-path="url(#walker-clip)">
+            <rect class="walker-bar walker-base-series" id="bar-dino-img" x="135" y="249.52" width="24" height="34.48" rx="4" data-value="12.7" data-std="3.4" data-series="DINO-WM" data-input="Images"/>
+            <rect class="walker-bar walker-ours" id="bar-vq-img" x="161" y="227.2" width="24" height="56.8" rx="4" data-value="22.0" data-std="5.9" data-series="VQ-WM" data-input="Images"/>
+            <rect class="walker-bar walker-base-series" id="bar-dino-pro" x="325" y="251.2" width="24" height="32.8" rx="4" data-value="12.0" data-std="4.9" data-series="DINO-WM" data-input="Images + proprioception"/>
+            <rect class="walker-bar walker-ours" id="bar-vq-pro" x="351" y="46.48" width="24" height="237.52" rx="4" data-value="97.3" data-std="2.5" data-series="VQ-WM" data-input="Images + proprioception"/>
+            </g>
+            <g class="walker-err" id="err-dino-img"><line x1="147" x2="147" y1="241.36" y2="257.68"/><line x1="143" x2="151" y1="241.36" y2="241.36"/><line x1="143" x2="151" y1="257.68" y2="257.68"/></g>
+            <text class="walker-val" id="val-dino-img" x="147" y="234.36" text-anchor="middle" data-value="12.7">12.7%</text>
+            <g class="walker-err" id="err-vq-img"><line x1="173" x2="173" y1="213.04" y2="241.36"/><line x1="169" x2="177" y1="213.04" y2="213.04"/><line x1="169" x2="177" y1="241.36" y2="241.36"/></g>
+            <text class="walker-val" id="val-vq-img" x="173" y="206.04" text-anchor="middle" data-value="22.0">22.0%</text>
+            <g class="walker-err" id="err-dino-pro"><line x1="337" x2="337" y1="239.44" y2="262.96"/><line x1="333" x2="341" y1="239.44" y2="239.44"/><line x1="333" x2="341" y1="262.96" y2="262.96"/></g>
+            <text class="walker-val" id="val-dino-pro" x="337" y="232.44" text-anchor="middle" data-value="12.0">12.0%</text>
+            <g class="walker-err" id="err-vq-pro"><line x1="363" x2="363" y1="40.48" y2="52.48"/><line x1="359" x2="367" y1="40.48" y2="40.48"/><line x1="359" x2="367" y1="52.48" y2="52.48"/></g>
+            <text class="walker-val" id="val-vq-pro" x="363" y="33.48" text-anchor="middle" data-value="97.3">97.3%</text>
+            <g class="walker-delta" id="walker-delta"><path class="walker-delta-path" d="M 189 227.2 H 400 V 56.48"/><path class="walker-delta-head" d="M 395 62.48 L 400 54.48 L 405 62.48"/><text class="walker-delta-text" x="406" y="138.84" text-anchor="start">+75.3 pp</text></g>
+            <rect class="walker-hit" x="127" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-img" aria-label="DINO-WM, Images: 12.7 percent, plus or minus 3.4"/>
+            <rect class="walker-hit" x="153" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-img" aria-label="VQ-WM, Images: 22.0 percent, plus or minus 5.9"/>
+            <rect class="walker-hit" x="317" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-pro" aria-label="DINO-WM, Images + proprioception: 12.0 percent, plus or minus 4.9"/>
+            <rect class="walker-hit" x="343" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-pro" aria-label="VQ-WM, Images + proprioception: 97.3 percent, plus or minus 2.5"/>
+            </svg>
+            <div class="walker-tip" id="walker-tip" role="status" aria-live="polite" hidden></div>
+          </div>
+          <details class="walker-table">
+            <summary>Table view</summary>
+            <div class="tablewrap">
+              <table>
+                <caption>Table II. Walker success rate (%) by observation input.</caption>
+                <thead><tr><th>Method</th><th>Images</th><th>Images + proprio.</th></tr></thead>
+                <tbody>
+                  <tr><td>DINO-WM</td><td>12.7 <span class="pm">&plusmn; 3.4</span></td><td>12.0 <span class="pm">&plusmn; 4.9</span></td></tr>
+                  <tr class="ours"><td>VQ-WM (ours)</td><td>22.0 <span class="pm">&plusmn; 5.9</span></td><td>97.3 <span class="pm">&plusmn; 2.5</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </figure>
       </div>
     </div>
   </div>
@@ -337,16 +395,8 @@
   <div class="wrap">
     <p class="eyebrow">Citation</p>
     <h2>BibTeX</h2>
-<pre class="bibtex" id="bib">@article{xu2026vqwm,
-  title   = {Vector-Quantized World Model: Latent Feedback Motion Planning for Robot Manipulation},
-  author  = {Xu, Xuezhou and Wang, Chung-Pang and Li, Zhenzhen and Riviere, Benjamin},
-  year    = {2026},
-  note    = {Submitted to the IEEE International Conference on Robotics and Automation (ICRA) 2027}
-}</pre>
-    <div class="copy-row">
-      <button class="copy-btn" id="copy-bib" type="button">Copy BibTeX</button>
-      <span class="copy-status" id="copy-status" aria-live="polite"></span>
-    </div>
+<p class="bibtex-note">The BibTeX entry will be added when the preprint is public.</p>
+  </div>
   </div>
 </section>
 </main>
@@ -359,24 +409,108 @@
 </footer>
 
 <script>
+/* Walker chart: bars grow from the baseline when scrolled into view. */
 (function () {
-  var btn = document.getElementById('copy-bib');
-  var status = document.getElementById('copy-status');
-  var bib = document.getElementById('bib');
-  if (!btn || !bib) return;
-  btn.addEventListener('click', function () {
-    var text = bib.textContent;
-    function selectFallback() {
-      var range = document.createRange(); range.selectNodeContents(bib);
-      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-      status.textContent = 'Selected. Press Ctrl/Cmd+C to copy.';
+  var chart = document.getElementById('walker-chart');
+  if (!chart) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var order = ['dino-img', 'vq-img', 'dino-pro', 'vq-pro'];
+  var BASE = 280, SCALE = 2.4;
+  var items = order.map(function (id) {
+    return { bar: document.getElementById('bar-' + id), err: document.getElementById('err-' + id), val: document.getElementById('val-' + id) };
+  });
+  var delta = document.getElementById('walker-delta');
+  var running = false, completed = false, lastTick = 0;
+
+  function setBar(it, v) {
+    it.bar.setAttribute('y', (BASE - SCALE * v).toFixed(2));
+    it.bar.setAttribute('height', (SCALE * v + 4).toFixed(2));
+  }
+  function reset() {
+    items.forEach(function (it) { setBar(it, 0); it.err.style.opacity = 0; it.val.style.opacity = 0; it.val.textContent = '0.0%'; });
+    delta.classList.remove('is-on');
+  }
+  function finish() {
+    items.forEach(function (it) {
+      var v = parseFloat(it.bar.getAttribute('data-value'));
+      setBar(it, v); it.err.style.opacity = 1; it.val.style.opacity = 1; it.val.textContent = v.toFixed(1) + '%';
+    });
+    delta.classList.add('is-on');
+    running = false; completed = true;
+  }
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+  function play() {
+    if (running) return;
+    running = true;
+    if (reduce) { finish(); return; }
+    reset(); completed = false;
+    var start = null, dur = 900, stagger = 220;
+    function frame(ts) {
+      if (start === null) start = ts;
+      lastTick = performance.now();
+      var done = true;
+      items.forEach(function (it, i) {
+        var v = parseFloat(it.bar.getAttribute('data-value'));
+        var t = Math.min(1, Math.max(0, (ts - start - i * stagger) / dur));
+        if (t < 1) done = false;
+        var e = ease(t);
+        setBar(it, v * e);
+        it.val.textContent = (v * e).toFixed(1) + '%';
+        it.val.style.opacity = t > 0.15 ? 1 : 0;
+        it.err.style.opacity = t >= 1 ? 1 : 0;
+      });
+      if (!done) { requestAnimationFrame(frame); }
+      else { setTimeout(function () { delta.classList.add('is-on'); running = false; completed = true; }, 150); }
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        status.textContent = 'Copied.';
-        setTimeout(function () { status.textContent = ''; }, 2500);
-      }, selectFallback);
-    } else { selectFallback(); }
+    requestAnimationFrame(frame);
+  }
+
+  // Resting state is the full chart (markup). Only arm the animation if the chart
+  // is not yet on screen, so a thumbnail or a no-observer browser still sees data.
+  var armed = false;
+  if ('IntersectionObserver' in window && !reduce) {
+    var rect = chart.getBoundingClientRect();
+    var onScreen = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!onScreen) { reset(); armed = true; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting && en.intersectionRatio >= 0.35) { io.disconnect(); if (armed) play(); else delta.classList.add('is-on'); }
+      });
+    }, { threshold: [0.35] });
+    io.observe(chart);
+    // Safety net: never leave an empty chart if the observer never fires or frames stall.
+    var guard = setInterval(function () {
+      if (completed) { clearInterval(guard); return; }
+      if (armed && performance.now() - lastTick > 2500) { finish(); clearInterval(guard); }
+    }, 3000);
+  } else { delta.classList.add('is-on'); completed = true; }
+
+  document.getElementById('walker-replay').addEventListener('click', function () { running = false; play(); });
+
+  // Hover / focus tooltip on each bar's hit target.
+  var tip = document.getElementById('walker-tip');
+  var plot = chart.querySelector('.walker-plot');
+  function show(hit) {
+    var bar = document.getElementById('bar-' + hit.getAttribute('data-bar'));
+    var v = parseFloat(bar.getAttribute('data-value')), s = bar.getAttribute('data-std');
+    while (tip.firstChild) tip.removeChild(tip.firstChild);
+    var strong = document.createElement('strong'); strong.textContent = v.toFixed(1) + '% \u00b1 ' + s;
+    var key = document.createElement('i'); key.className = 'walker-key ' + (bar.classList.contains('walker-ours') ? 'sw-ours' : 'sw-base');
+    var who = document.createElement('span'); who.textContent = bar.getAttribute('data-series') + ' \u00b7 ' + bar.getAttribute('data-input');
+    tip.appendChild(strong); tip.appendChild(document.createElement('br')); tip.appendChild(key); tip.appendChild(who);
+    var pr = plot.getBoundingClientRect(), br = bar.getBoundingClientRect();
+    var left = br.left - pr.left + br.width / 2, top = br.top - pr.top - 10;
+    tip.hidden = false;
+    tip.style.left = Math.max(70, Math.min(pr.width - 70, left)) + 'px';
+    tip.style.top = Math.max(0, top - tip.offsetHeight - 26) + 'px';
+    chart.querySelectorAll('.walker-bar').forEach(function (b) { b.classList.toggle('is-hover', b === bar); });
+  }
+  function hide() { tip.hidden = true; chart.querySelectorAll('.walker-bar').forEach(function (b) { b.classList.remove('is-hover'); }); }
+  chart.querySelectorAll('.walker-hit').forEach(function (hit) {
+    hit.addEventListener('pointerenter', function () { show(hit); });
+    hit.addEventListener('pointerleave', hide);
+    hit.addEventListener('focus', function () { show(hit); });
+    hit.addEventListener('blur', hide);
   });
 })();
 </script>
