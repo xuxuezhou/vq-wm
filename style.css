@@ -216,6 +216,9 @@ td .pm { color: var(--muted); font-weight: 400; font-size: 0.85em; }
 .ab-pt.ab-euc rect, .ab-legend .ab-euc { fill: var(--chart-base); }
 .ab-legend text { fill: var(--fg); font-size: 12px; }
 
+.tablewrap-center { display: flex; justify-content: center; }
+.table-auto { width: auto; min-width: min(100%, 24rem); }
+
 /* side by side figure + prose */
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 8px; }
 .split figure { margin: 0; }
