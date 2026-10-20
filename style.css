@@ -118,7 +118,7 @@ h1.art .t-dash { display: inline-block; transform: translateY(-0.06em) scaleX(0.
 .mc-grid { stroke: var(--chart-grid); stroke-width: 1; }
 .mc-base { stroke: var(--line); }
 .mc-tick { fill: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
-.mc-cat { fill: var(--muted); font-size: 11.5px; }
+.mc-cat { fill: var(--muted); font-size: 11px; }
 .mc-cat.ours { fill: var(--fg); font-weight: 600; }
 .mc-bar { fill: var(--chart-base); }
 .mc-bar.ours { fill: var(--chart-ours); }
