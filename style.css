@@ -9,6 +9,8 @@
   --muted: #5b6676;
   --line: #d9dfe8;
   --plate: #ffffff;
+  --raster-bg: transparent;
+  --raster-pad: 0px;
   --accent: #2457b5;      /* controller / feedback blue from the figures */
   --accent-ink: #ffffff;
   --accent-2: #d97a12;    /* planning orange from the figures */
@@ -22,13 +24,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f141b; --surface: #161d27; --band: #131a23; --fg: #e9edf3; --muted: #9ba7b8;
-    --line: #28323f; --plate: #f3f5f8; --accent: #7aa6ff; --accent-ink: #0b1220;
+    --line: #28323f; --plate: #f3f5f8; --raster-bg: #eef1f5; --raster-pad: 14px; --accent: #7aa6ff; --accent-ink: #0b1220;
     --accent-2: #f0a24a; --accent-soft: #1b2a45; --ok: #4cc48c; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0f141b; --surface: #161d27; --band: #131a23; --fg: #e9edf3; --muted: #9ba7b8;
-  --line: #28323f; --plate: #f3f5f8; --accent: #7aa6ff; --accent-ink: #0b1220;
+  --line: #28323f; --plate: #f3f5f8; --raster-bg: #eef1f5; --raster-pad: 14px; --accent: #7aa6ff; --accent-ink: #0b1220;
   --accent-2: #f0a24a; --accent-soft: #1b2a45; --ok: #4cc48c; color-scheme: dark;
 }
 
@@ -95,7 +97,7 @@ h1.art .t-dash { display: inline-block; transform: translateY(-0.06em) scaleX(0.
 .btn-disabled { color: var(--muted); cursor: default; border-style: dashed; }
 
 .hero-fig { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: center; }
-.hero-fig .plate { background: var(--plate); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.hero-fig .plate { background: var(--raster-bg); border-radius: 12px; padding: var(--raster-pad); }
 .hero-fig figcaption { font-size: 0.98rem; color: var(--muted); }
 .hero-fig figcaption strong { color: var(--fg); }
 .legend { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; font-size: 0.93rem; }
@@ -137,7 +139,9 @@ h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; mar
 .math { font-family: "Times New Roman", Times, serif; font-style: italic; }
 
 figure { margin: 28px 0 0; }
-figure .plate { background: var(--plate); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+figure .plate { background: var(--raster-bg); border-radius: 12px; padding: var(--raster-pad); overflow-x: auto; }
+figure .plate-photo, figure .plate-chart { background: transparent; padding: 0; }
+figure .plate-photo img { border-radius: 10px; }
 figure .plate img { margin-inline: auto; }
 figure .plate-wide img { min-width: 760px; }
 figcaption { margin-top: 12px; font-size: 0.95rem; color: var(--muted); max-width: 90ch; }
@@ -198,7 +202,6 @@ td .pm { color: var(--muted); font-weight: 400; font-size: 0.85em; }
 :root[data-theme="dark"] { --chart-ours: #5b8ef0; --chart-base: #7a8aa0; --chart-grid: #26303d; }
 
 /* ablation chart (drawn, not an image) */
-.plate-chart { background: var(--surface); }
 .abl-chart { width: 100%; height: auto; display: block; }
 .ab-grid { stroke: var(--chart-grid); stroke-width: 1; }
 .ab-base { stroke: var(--line); }
