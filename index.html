@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VQ-WM</title>
+<meta name="description" content="Vector-Quantized World Model: latent feedback motion planning for robot manipulation. Discrete search over controller-reachable latent states, executed with continuous visual feedback.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#top">VQ<span>-</span>WM</a>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#method">Method</a>
+      <a href="#realworld">Real robot</a>
+      <a href="#simulation">Simulation</a>
+      <a href="#ablation">Ablation</a>
+      <a href="#bibtex">BibTeX</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <p class="badge">Submitted to ICRA 2027</p>
+    <h1>VQ-WM</h1>
+    <p class="subtitle"><span class="hl">Vector-Quantized World Model:</span> Latent Feedback Motion Planning for Robot Manipulation</p>
+    <p class="authors">
+      Xuezhou Xu<sup>*1</sup>, Chung-Pang Wang<sup>*1</sup>, Zhenzhen Li<sup>2</sup>, Benjamin Riviere<sup>1</sup>
+    </p>
+    <p class="affils"><sup>1</sup>New York University &nbsp;&middot;&nbsp; <sup>2</sup>NVIDIA &nbsp;&middot;&nbsp; <sup>*</sup>Equal contribution</p>
+    <p class="hero-lede">
+      Long-horizon manipulation from a single goal image fails in two ways: prediction errors compound along
+      continuous latent rollouts, and planners propose targets the low-level controller cannot reach.
+      VQ-WM vector-quantizes the latent space by <strong>controller reachability</strong>, measured as
+      first-passage time, so a discrete planner can search far ahead over states the controller is known to reach,
+      and a continuous controller tracks each planned state with visual feedback.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="assets/vqwm_icra2027.pdf">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 8.5h4M6 11h4"/></svg>
+        Paper (PDF)
+      </a>
+      <span class="btn btn-disabled" title="Released upon publication">Code &mdash; coming soon</span>
+      <span class="btn btn-disabled" title="Released upon publication">Video &mdash; coming soon</span>
+    </div>
+
+    <figure class="hero-fig">
+      <div class="plate">
+        <img src="assets/fig1_overview.png" width="1408" height="1035" alt="Overview of VQ-WM: initial and goal images are encoded into latent states and vector-quantized by controller reachability; the planner searches over vector-quantized states q_init, q_1, q_goal, and a feedback controller drives the robot through each region of attraction R(q) toward z_goal.">
+      </div>
+      <figcaption>
+        <strong>Figure 1. Plan over what the controller can reach.</strong> The initial (green) and goal (red)
+        images are encoded into latent states and vector-quantized according to controller reachability, so that
+        each vector-quantized state <span class="math">q</span> is a target the controller is expected to reach from
+        its region of attraction <span class="math">R(q)</span>. The planner performs discrete search over these states
+        with a discrete latent predictor; a continuous controller then drives the robot toward each planned target in
+        turn, correcting deviations with visual feedback.
+        <ul class="legend">
+          <li><i style="background:#1f2a44"></i>Encoding: pretrained, frozen V-JEPA&nbsp;2 encoder maps images to latent states</li>
+          <li><i style="background:#7c3aed"></i>Prediction: discrete latent predictor expands successor codes online</li>
+          <li><i style="background:#e8961e"></i>Planning: breadth-first search for the shortest code path to the goal</li>
+          <li><i style="background:#2457b5"></i>Feedback control: goal-conditioned controller tracks each code, every step</li>
+        </ul>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= KEY NUMBERS ================= -->
+<section class="statband">
+  <div class="wrap stat-grid">
+    <div class="stat"><div class="stat-value">100<small>%</small></div><div class="stat-label">Task progress on the physical 15-move Tower of Hanoi, trained only on short play data without full-task demonstrations</div></div>
+    <div class="stat"><div class="stat-value">+95<small>pp</small></div><div class="stat-label">Over Cosmos Policy (5%) and &pi;<sub>0.5</sub> (3%) in the non-expert play-data setting on real hardware</div></div>
+    <div class="stat"><div class="stat-value">+13.3&ndash;34.6<small>pp</small></div><div class="stat-label">Over H-JEPA, the strongest world-model planner, on Cube-Easy, Cube-Hard and Scene long-horizon manipulation</div></div>
+    <div class="stat"><div class="stat-value">22 &rarr; 97<small>%</small></div><div class="stat-label">Walker success when the controller receives proprioception, with the planner left unchanged</div></div>
+    <div class="stat"><div class="stat-value">90 vs 40<small>%</small></div><div class="stat-label">Peak success with first-passage-time codebooks versus Euclidean codebooks on simulated Tower of Hanoi</div></div>
+    <div class="stat"><div class="stat-value">&lt;1<small>s</small></div><div class="stat-label">To plan roughly five minutes of robot execution in a single planning call on one NVIDIA RTX 5080</div></div>
+  </div>
+</section>
+
+<!-- ================= OVERVIEW ================= -->
+<main>
+<section class="wrap section" id="overview">
+  <p class="eyebrow">Overview</p>
+  <h2>Couple the planning abstraction to the controller</h2>
+  <div class="prose">
+    <p>
+      Visual world models let a planner evaluate action sequences from pixels before acting. But as the horizon
+      grows, autoregressive rollouts in continuous latent space accumulate error and the action sequence becomes
+      harder to optimize. Hierarchical and vector-quantized planners shorten the search, yet a predicted subgoal is
+      only useful if the execution mechanism can actually reach it. Classical feedback motion planning answers this
+      by composing local controllers whose regions of attraction chain to the goal. VQ-WM brings that principle to
+      learned visual latent spaces.
+    </p>
+    <p>VQ-WM contributes three things:</p>
+    <ul>
+      <li><strong>A latent feedback motion planning framework.</strong> Vector quantization turns the latent space
+        into a compact graph of controller-reachable states. A discrete latent predictor models transitions between
+        codes, breadth-first search finds the shortest code path to the goal, and a goal-conditioned controller
+        tracks the path with continuous visual feedback.</li>
+      <li><strong>First-passage time as the quantization metric.</strong> Instead of Euclidean distance, states are
+        grouped by how many controller calls it takes to reach a code. The estimate comes from closed-loop controller
+        rollouts in a learned latent world model, so the codebook reflects what the controller can reach and stabilize.</li>
+      <li><strong>Validation in hardware and simulation.</strong> Learning from short play data, VQ-WM solves the
+        physical four-disk Tower of Hanoi with 100% task progress. In simulation it surpasses H-JEPA by 13.3 to 34.6
+        percentage points on long-horizon manipulation, and adding proprioception to the controller raises Walker
+        success from 22.0% to 97.3% without touching the planner.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= METHOD ================= -->
+<section class="section section-alt" id="method">
+  <div class="wrap">
+    <p class="eyebrow">Method</p>
+    <h2>A slow discrete planner and a fast continuous controller</h2>
+    <div class="prose">
+      <p>
+        VQ-WM interleaves discrete planning over a controller-aware state codebook with continuous feedback control.
+        Its components are a frozen pretrained encoder <span class="math">E<sub>Z</sub></span>, a goal-conditioned
+        controller <span class="math">&pi;</span>, a continuous latent predictor <span class="math">P<sub>Z</sub></span>,
+        state and action quantizers <span class="math">&phi;<sub>Z</sub></span>, <span class="math">&phi;<sub>U</sub></span>
+        with codebooks <span class="math">Q</span>, <span class="math">U</span>, a latent action encoder
+        <span class="math">E<sub>U</sub></span>, and a discrete latent predictor <span class="math">P<sub>Q</sub></span>.
+      </p>
+    </div>
+    <figure>
+      <div class="plate plate-wide">
+        <img src="assets/fig2_pipeline.png" width="2864" height="1420" alt="VQ-WM components and pipeline. (a) Inference: planning over vector-quantized states with the discrete predictor P_Q, a fast controller pi acting every step, and vector quantization phi_Z of the current and goal latents. (b) Training: controller, continuous latent predictor, state codebook construction via greedy set cover, and vector-quantized latent dynamics.">
+      </div>
+      <figcaption><strong>Figure 2. Components and pipeline.</strong> (a) Inference encodes the initial and goal images,
+      searches over state codes, and executes the planned targets with visual feedback. (b) Offline training learns the
+      controller and continuous latent predictor, performs state vector quantization using first-passage time, and then
+      learns vector-quantized latent dynamics.</figcaption>
+    </figure>
+
+    <div class="cols">
+      <div class="card">
+        <h3>Planning loop <span class="rate rate-slow">slow</span></h3>
+        <p>Encode the initial and goal observations, quantize them to codes <span class="math">q<sub>init</sub></span> and
+          <span class="math">q<sub>goal</sub></span>, then expand successor codes predicted by
+          <span class="math">P<sub>Q</sub>(&middot; | q, u)</span> for every vector-quantized action
+          <span class="math">u</span>, building the graph online until the goal is found.</p>
+        <p>Breadth-first search over the most likely successors returns the fewest-transition path
+          <span class="math">q<sub>0</sub>, &hellip;, q<sub>L</sub></span>. The plan is cheap enough to re-run in a receding-horizon
+          loop, or to compute once per episode, which is how the experiments run.</p>
+      </div>
+      <div class="card">
+        <h3>Control loop <span class="rate rate-fast">fast</span></h3>
+        <p>At every step the current observation is encoded to <span class="math">z<sub>t</sub></span> and the controller
+          samples <span class="math">a<sub>t</sub> &sim; &pi;(&middot; | z<sub>t</sub>, q<sub>i</sub>)</span> toward the current planned code.</p>
+        <p>The controller follows the codes in order, starting at <span class="math">q<sub>init</sub></span> and finally
+          targeting <span class="math">z<sub>goal</sub></span>. Each transition gets the number of controller calls that the
+          first-passage-time estimate says it needs before the target switches, so visual feedback corrects local
+          deviations instead of letting them compound.</p>
+      </div>
+    </div>
+
+    <h3>First-passage time instead of Euclidean distance</h3>
+    <div class="defn">
+      <p><span class="term">First-passage time</span> <span class="math">d(z, z&prime;)</span> is the number of controller
+        calls until a closed-loop trajectory, started at <span class="math">z</span> and driven by
+        <span class="math">&pi;</span> toward <span class="math">z&prime;</span>, first enters an
+        <span class="math">&epsilon;</span>-neighborhood of <span class="math">z&prime;</span>. It is estimated by rolling
+        <span class="math">&pi;</span> and <span class="math">P<sub>Z</sub></span> together in latent space, and set to
+        &infin; if the target is not reached within the controller-call budget <span class="math">R</span>.</p>
+    </div>
+    <div class="prose">
+      <p>
+        Geometric proximity in latent space says little about the effort a feedback controller needs to reach a target.
+        First-passage time is directed, controller-dependent, and measured in the controller&rsquo;s own units, so it
+        plays two roles at once. During training it defines each candidate code&rsquo;s region of attraction
+        <span class="math">R&#770;(e) = {z : d(z, e) &le; R}</span>, and a greedy set cover picks the smallest codebook
+        whose regions cover the encoded dataset. Every latent state is then assigned to the code it reaches in the
+        fewest calls. At inference it quantizes the initial and goal states and decides how many controller calls each
+        planned transition is given.
+      </p>
+      <p>
+        With the state codebook fixed, the latent action encoder, action codebook and discrete predictor are trained
+        jointly on code-to-code transitions observed in the offline trajectories, with a cross-entropy transition loss
+        and the standard vector-quantization commitment loss.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REAL WORLD ================= -->
+<section class="wrap section" id="realworld">
+  <p class="eyebrow">Real-world experiments</p>
+  <h2>Composing play data into a full Tower of Hanoi solution</h2>
+  <div class="prose">
+    <p>
+      A WidowX AI arm must move a four-disk stack to another rod, one disk at a time, never placing a larger disk
+      on a smaller one. The optimal solution takes 15 puzzle moves (H15) and minutes of execution with precise
+      grasping, alignment and disk insertion. Play data was collected autonomously at 30&nbsp;Hz: a symbolic planner
+      generated randomized legal move sequences from board states detected by the video object segmentation model
+      Cutie, and each transfer ran a predefined Cartesian pick-and-place.
+    </p>
+  </div>
+  <figure>
+    <div class="plate">
+      <img src="assets/fig3_realworld.png" width="1050" height="312" alt="Four photographs of a WidowX AI arm solving the four-disk Tower of Hanoi, from the initial stack on the left rod to the goal stack on the right rod.">
+    </div>
+    <figcaption><strong>Figure 3.</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi, from the initial
+    configuration to the goal.</figcaption>
+  </figure>
+  <figure>
+    <div class="plate plate-wide">
+      <img src="assets/fig4_realworld_results.png" width="2183" height="541" alt="Bar chart of average task progress for Cosmos Policy, pi 0.5, V-JEPA 2-AC, V-JEPA 2-AC with manual subgoals, and VQ-WM across expert data H1, expert data H15, and non-expert data. VQ-WM reaches 100, 99.6 and 100 percent.">
+    </div>
+    <figcaption><strong>Figure 4. Real-world results.</strong> VLA and WAM baselines without runtime search fail to extrapolate
+    from short play subtasks to full-puzzle solutions, whereas VQ-WM composes local behaviors into complete plans and
+    executes them reliably. V-JEPA 2-AC struggles even on H1, suggesting a limited effective planning horizon.
+    V-JEPA 2-AC* receives manually specified subgoals that supply the solution sequence, leaving the model to perform
+    local planning and control. Six test cases, three trials each, one RTX 5080 for inference.</figcaption>
+  </figure>
+  <div class="prose">
+    <h3>Expert data</h3>
+    <p>
+      Trained on complete solution demonstrations, Cosmos Policy and &pi;<sub>0.5</sub> both reach 100% task progress
+      on single moves (H1) but drop to 76% and 23% on the full H15 puzzle as execution errors compound across disk
+      transfers. V-JEPA 2-AC optimizes action sequences with the cross-entropy method and reaches 0% on both: extending its
+      lookahead means searching longer sequences whose predicted outcomes grow unreliable, and intermediate puzzle moves do
+      not immediately bring the observed state closer to the goal. Hand-picking subgoal images raises it to 94%.
+      VQ-WM searches the shortest path through controller-aware latent abstractions, computes the complete solution in a
+      single planning call, and reaches 99.6% on H15.
+    </p>
+    <h3>Non-expert play data</h3>
+    <p>
+      Trained only on play-data subtasks of at most five moves, Cosmos Policy and &pi;<sub>0.5</sub> achieve 5% and 3%:
+      behavior cloning does not compose short subtasks into full H15 solutions. V-JEPA 2-AC* with manual subgoals improves
+      to 27%. VQ-WM achieves 100%, composing transitions it has seen into long-horizon plans and executing them reliably.
+    </p>
+  </div>
+</section>
+
+<!-- ================= SIMULATION ================= -->
+<section class="section section-alt" id="simulation">
+  <div class="wrap">
+    <p class="eyebrow">Simulation benchmarks</p>
+    <h2>Manipulation and locomotion in Stable-WorldModel</h2>
+    <div class="table-grid">
+      <div>
+        <div class="prose">
+          <p>
+            On the Cube and Scene environments, the margin over the strongest baseline grows with the task horizon:
+            8.0 points on Cube-Easy, 13.3 on Cube-Hard and 28.0 on Scene. Two mechanisms explain the gain. Temporal
+            straightening reshapes the latent space so Euclidean distance becomes a planning metric; VQ-WM keeps the
+            encoder frozen and learns the geometry through first-passage time instead, reaching 73.3% on Cube-Hard
+            where TS fails at 10.7%. And where H-JEPA predicts subgoals the controller may fail to reach, VQ-WM plans over
+            reachable codes, consistent with its 13.3-point gain on Cube-Hard.
+          </p>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <caption>Table I. Long-horizon manipulation success rate (%), mean &plusmn; std.</caption>
+            <thead><tr><th>Method</th><th>Cube-Easy</th><th>Cube-Hard</th><th>Scene</th></tr></thead>
+            <tbody>
+              <tr><td>LeWM</td><td>74.0 <span class="pm">&plusmn; 2.8</span></td><td>32.0 <span class="pm">&plusmn; 6.1</span></td><td>42.7 <span class="pm">&plusmn; 1.9</span></td></tr>
+              <tr><td>TS</td><td>68.0 <span class="pm">&plusmn; 2.8</span></td><td>10.7 <span class="pm">&plusmn; 0.9</span></td><td>47.3 <span class="pm">&plusmn; 2.5</span></td></tr>
+              <tr><td>PLDM</td><td>62.0 <span class="pm">&plusmn; 4.3</span></td><td>11.3 <span class="pm">&plusmn; 3.8</span></td><td>44.7 <span class="pm">&plusmn; 4.1</span></td></tr>
+              <tr><td>H-JEPA</td><td>76.7 <span class="pm">&plusmn; 2.5</span></td><td>60.0 <span class="pm">&plusmn; 5.0</span></td><td>40.7 <span class="pm">&plusmn; 2.5</span></td></tr>
+              <tr class="ours"><td>VQ-WM (ours)</td><td>84.7 <span class="pm">&plusmn; 2.5</span></td><td>73.3 <span class="pm">&plusmn; 0.9</span></td><td>75.3 <span class="pm">&plusmn; 5.0</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="prose">
+          <p>
+            Walker goal images are sampled 50 steps ahead of expert trajectories, and success requires torso height,
+            torso pitch and all six leg joint angles within 0.3 of the goal. From images alone, both DINO-WM and VQ-WM
+            do poorly because such poses depend on joint coordination the images barely convey. Adding proprioception
+            to the controller lifts VQ-WM to 97.3% while DINO-WM stays at 12.0%: the extra input improves the controller,
+            the controller-aware codebook adapts to what it can now reach, and the planner is untouched.
+          </p>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <caption>Table II. Walker success rate (%) by observation input.</caption>
+            <thead><tr><th>Method</th><th>Images</th><th>Images + proprio.</th></tr></thead>
+            <tbody>
+              <tr><td>DINO-WM</td><td>12.7 <span class="pm">&plusmn; 3.4</span></td><td>12.0 <span class="pm">&plusmn; 4.9</span></td></tr>
+              <tr class="ours"><td>VQ-WM (ours)</td><td>22.0 <span class="pm">&plusmn; 5.9</span></td><td>97.3 <span class="pm">&plusmn; 2.5</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABLATION ================= -->
+<section class="wrap section" id="ablation">
+  <p class="eyebrow">Ablation</p>
+  <h2>Why first-passage time, not Euclidean distance</h2>
+  <div class="split">
+    <div class="prose">
+      <p>
+        On a MuJoCo version of the same Tower of Hanoi setup, with 104 walk trajectories covering all legal disk moves,
+        only the quantization metric is swapped; encoder, controller and training are unchanged. Each point averages
+        three seeds of 50 trajectories with shortest-path lengths of 1 to 15 disk moves.
+      </p>
+      <p>
+        First-passage time peaks near 90% success against 40% for Euclidean distance, and holds across codebook sizes
+        from roughly 250 to 2000, an eightfold range. Very small codebooks merge distinct puzzle configurations and
+        produce unexecutable plans; very large ones leave too few observed examples per transition for the discrete
+        predictor to learn from.
+      </p>
+      <p>
+        Euclidean quantization ignores controller reachability, so consecutive planned targets may be unreachable.
+        It also declares a target reached when <span class="math">&#8214;z<sub>t</sub> &minus; q<sub>i</sub>&#8214;<sub>2</sub> &le; &epsilon;</span>,
+        and latent proximity does not always mean physical arrival, so the controller may switch targets too early or never
+        switch. The first-passage-time variant instead budgets each target with the controller calls the latent predictor
+        estimates it needs.
+      </p>
+    </div>
+    <figure>
+      <div class="plate">
+        <img src="assets/fig5_codebook_ablation.png" width="1050" height="783" alt="Success rate versus codebook size on a log axis from 200 to 5000. First-passage-time codebooks hold near 85 to 90 percent from about 400 to 1500 codes before dropping; Euclidean codebooks peak near 40 percent around 2000 codes.">
+      </div>
+      <figcaption><strong>Figure 5.</strong> State vector quantization with different codebook sizes on simulated Tower of Hanoi.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= BIBTEX ================= -->
+<section class="section section-alt" id="bibtex">
+  <div class="wrap">
+    <p class="eyebrow">Citation</p>
+    <h2>BibTeX</h2>
+<pre class="bibtex" id="bib">@article{xu2026vqwm,
+  title   = {Vector-Quantized World Model: Latent Feedback Motion Planning for Robot Manipulation},
+  author  = {Xu, Xuezhou and Wang, Chung-Pang and Li, Zhenzhen and Riviere, Benjamin},
+  year    = {2026},
+  note    = {Submitted to the IEEE International Conference on Robotics and Automation (ICRA) 2027}
+}</pre>
+    <div class="copy-row">
+      <button class="copy-btn" id="copy-bib" type="button">Copy BibTeX</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Xuezhou Xu, Chung-Pang Wang, Zhenzhen Li and Benjamin Riviere. New York University and NVIDIA.</p>
+    <p>Code, models and robot footage will be released upon publication.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var btn = document.getElementById('copy-bib');
+  var status = document.getElementById('copy-status');
+  var bib = document.getElementById('bib');
+  if (!btn || !bib) return;
+  btn.addEventListener('click', function () {
+    var text = bib.textContent;
+    function selectFallback() {
+      var range = document.createRange(); range.selectNodeContents(bib);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      status.textContent = 'Selected. Press Ctrl/Cmd+C to copy.';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        status.textContent = 'Copied.';
+        setTimeout(function () { status.textContent = ''; }, 2500);
+      }, selectFallback);
+    } else { selectFallback(); }
+  });
+})();
+</script>
+</body>
+</html>
