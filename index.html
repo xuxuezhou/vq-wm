@@ -31,7 +31,7 @@
   <div class="wrap">
    <div class="hero-text">
     <p class="badge">In submission</p>
-    <h1 class="art"><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span><span class="art-steps" aria-hidden="true"></span></h1>
+    <h1 class="art"><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span></h1>
     <p class="subtitle"><span class="t-vq">V</span>ector-<span class="t-vq">Q</span>uantized <span class="t-wm">W</span>orld <span class="t-wm">M</span>odel:<br>Latent Feedback Motion Planning for Robot Manipulation</p>
     <p class="authors">
       Xuezhou Xu<sup>*1</sup>, Chung-Pang Wang<sup>*1</sup>, Zhenzhen Li<sup>2</sup>, Benjamin Riviere<sup>1</sup>
@@ -170,18 +170,63 @@
       <p>
         Geometric proximity in latent space says little about the effort a feedback controller needs to reach a target.
         First-passage time is directed, controller-dependent, and measured in the controller&rsquo;s own units, so it
-        plays two roles at once. During training it defines each candidate code&rsquo;s region of attraction
-        <span class="math">R&#770;(e) = {z : d(z, e) &le; R}</span>, and a greedy set cover picks the smallest codebook
-        whose regions cover the encoded dataset. Every latent state is then assigned to the code it reaches in the
-        fewest calls. At inference it quantizes the initial and goal states and decides how many controller calls each
-        planned transition is given.
-      </p>
-      <p>
-        With the state codebook fixed, the latent action encoder, action codebook and discrete predictor are trained
-        jointly on code-to-code transitions observed in the offline trajectories, with a cross-entropy transition loss
-        and the standard vector-quantization commitment loss.
+        plays two roles: during training it defines each candidate code&rsquo;s region of attraction and drives codebook
+        construction, and at inference it quantizes the initial and goal states and decides how many controller calls
+        each planned transition is given.
       </p>
     </div>
+
+    <h3>Training pipeline</h3>
+    <div class="prose">
+      <p>
+        Everything is learned from the reward-free offline dataset <span class="math">D</span>, in four stages that
+        match the rows of Fig.&nbsp;2(b). A pretrained encoder <span class="math">E<sub>Z</sub></span> (V-JEPA&nbsp;2) maps
+        observations to latent states <span class="math">z<sub>t</sub> = E<sub>Z</sub>(o<sub>t</sub>)</span> and stays frozen throughout.
+      </p>
+    </div>
+    <ol class="steps">
+      <li>
+        <h4>Controller <span class="math">&pi;</span></h4>
+        <p>Trained on state&ndash;goal pairs <span class="math">(z<sub>t</sub>, z<sub>t+r</sub>)</span> from the same offline
+          trajectory, with <span class="math">r &sim; Uniform{0, &hellip;, R}</span> so targets sit at different temporal distances;
+          <span class="math">r = 0</span> pairs use a hold action so the controller learns to stay put. The loss is the
+          <span class="math">L<sub>1</sub></span> error between the recorded action and the predicted action,
+          <span class="math">&#8466;<sub>control</sub> = &#8214;a<sub>t</sub> &minus; &acirc;<sub>t</sub>&#8214;<sub>1</sub></span>.
+          For a target <span class="math">z&prime;</span>, its <span class="math">R</span>-step region of attraction is the set of
+          latent states from which closed-loop control with <span class="math">&pi;</span> reaches an
+          <span class="math">&epsilon;</span>-neighborhood of <span class="math">z&prime;</span> within <span class="math">R</span> calls.</p>
+      </li>
+      <li>
+        <h4>Continuous latent predictor <span class="math">P<sub>Z</sub></span></h4>
+        <p>Predicts the next latent state from the current latent and a physical action. It is supervised over closed-loop
+          rollouts with <span class="math">&pi;</span>, the same procedure later used to estimate first-passage time: from
+          <span class="math">z<sub>t</sub></span> toward target <span class="math">z<sub>t+r</sub></span>, roll
+          <span class="math">R</span> steps and match the recorded trajectory, held at the target once it is reached,
+          <span class="math">&#8466;<sub>rollout</sub> = (1/R) &Sigma;<sub>k</sub> &#8214;&#7825;<sub>k+1</sub> &minus; z<sub>t+min(k+1, r)</sub>&#8214;<sup>2</sup></span>.</p>
+      </li>
+      <li>
+        <h4>State codebook construction <span class="math">&phi;<sub>Z</sub></span>, <span class="math">Q</span></h4>
+        <p>First-passage time <span class="math">d(z, z&prime;)</span> is estimated by rolling <span class="math">&pi;</span> and
+          <span class="math">P<sub>Z</sub></span> together in latent space, and set to &infin; if the target is not reached within
+          <span class="math">R</span> calls. Each candidate code <span class="math">e</span> gets an estimated region of attraction
+          <span class="math">R&#770;(e) = {z : d(z, e) &le; R}</span>, computed from local rollouts over its
+          <span class="math">K</span> nearest neighbors. Greedy set cover then picks the smallest codebook whose regions cover
+          the whole encoded dataset (Algorithm&nbsp;1), and every latent state is assigned to the code it reaches in the
+          fewest calls, <span class="math">&phi;<sub>Z</sub>(z) = argmin<sub>q</sub> d(z, q)</span>. Because
+          <span class="math">d</span> is directed, the goal is assigned to the code from which the controller reaches it fastest.</p>
+      </li>
+      <li>
+        <h4>Vector-quantized latent dynamics <span class="math">E<sub>U</sub></span>, <span class="math">&phi;<sub>U</sub></span>, <span class="math">P<sub>Q</sub></span></h4>
+        <p>With the state codebook fixed, each trajectory becomes a sequence of codes, and a transition
+          <span class="math">(q<sub>t</sub>, q<sub>t&prime;</sub>)</span> is recorded at the first later step where the code changes.
+          The latent action encoder maps the pair to <span class="math">&utilde;<sub>t</sub> = E<sub>U</sub>(q<sub>t</sub>, q<sub>t&prime;</sub>)</span>,
+          the action quantizer snaps it to the nearest entry of the learned action codebook <span class="math">U</span> with the standard
+          vector-quantization objective (stop-gradient and commitment terms), and the discrete predictor
+          <span class="math">P<sub>Q</sub>(q<sub>t&prime;</sub> | q<sub>t</sub>, u<sub>t</sub>)</span> is trained with cross-entropy.
+          The joint objective is <span class="math">&#8466;<sub>transition</sub> + &#8466;<sub>VQ</sub></span>; this is the graph the
+          planner searches at inference.</p>
+      </li>
+    </ol>
   </div>
 </section>
 
