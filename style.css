@@ -84,7 +84,8 @@ h1.art .t-dash { display: inline-block; transform: translateY(-0.06em) scaleX(0.
 .authors { margin: 0 0 6px; font-size: 1.05rem; }
 .authors a { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); }
 .authors sup { font-size: 0.7em; color: var(--muted); }
-.affils { margin: 0 0 22px; color: var(--muted); font-size: 0.95rem; }
+.affils { margin: 0 0 6px; color: var(--muted); font-size: 0.95rem; }
+.affils-note { margin-bottom: 22px; font-size: 0.88rem; }
 .abstract { max-width: 76ch; margin: 0 0 40px; text-align: left; }
 .abstract .eyebrow { text-align: center; margin-bottom: 10px; }
 .abstract p:not(.eyebrow) { margin: 0; font-size: 1.02rem; line-height: 1.65; }
