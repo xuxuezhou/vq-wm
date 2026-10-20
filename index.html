@@ -18,8 +18,8 @@
     <nav>
       <a href="#overview">Overview</a>
       <a href="#method">Method</a>
-      <a href="#realworld">Real robot</a>
       <a href="#simulation">Simulation</a>
+      <a href="#realworld">Real World</a>
       <a href="#ablation">Ablation</a>
       <a href="#bibtex">BibTeX</a>
     </nav>
@@ -31,7 +31,7 @@
   <div class="wrap">
    <div class="hero-text">
     <p class="badge">In submission</p>
-    <h1><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span></h1>
+    <h1 class="art"><span class="t-vq">VQ</span><span class="t-dash">-</span><span class="t-wm">WM</span><span class="art-steps" aria-hidden="true"></span></h1>
     <p class="subtitle"><span class="t-vq">V</span>ector-<span class="t-vq">Q</span>uantized <span class="t-wm">W</span>orld <span class="t-wm">M</span>odel:<br>Latent Feedback Motion Planning for Robot Manipulation</p>
     <p class="authors">
       Xuezhou Xu<sup>*1</sup>, Chung-Pang Wang<sup>*1</sup>, Zhenzhen Li<sup>2</sup>, Benjamin Riviere<sup>1</sup>
@@ -50,7 +50,6 @@
       <span class="btn btn-disabled" title="Released upon publication">Video &mdash; coming soon</span>
     </div>
     <div class="abstract">
-      <p class="eyebrow">Abstract</p>
       <p>
         Visual world models have shown strong potential for robot planning, yet long-horizon manipulation remains
         challenging: prediction errors compound over autoregressive rollouts, search complexity grows with the horizon,
@@ -186,53 +185,8 @@
   </div>
 </section>
 
-<!-- ================= REAL WORLD ================= -->
-<section class="wrap section" id="realworld">
-  <p class="eyebrow">Real-world experiments</p>
-  <h2>Composing play data into a full Tower of Hanoi solution</h2>
-  <div class="prose">
-    <p>
-      A WidowX AI arm must move a four-disk stack to another rod, one disk at a time, never placing a larger disk
-      on a smaller one. The optimal solution takes 15 puzzle moves (H15) and minutes of execution with precise
-      grasping, alignment and disk insertion. Play data was collected autonomously at 30&nbsp;Hz: a symbolic planner
-      generated randomized legal move sequences from board states detected by the video object segmentation model
-      Cutie, and each transfer ran a predefined Cartesian pick-and-place.
-    </p>
-  </div>
-  <figure>
-    <div class="plate">
-      <img src="assets/fig3_realworld.png" width="1050" height="312" alt="Four photographs of a WidowX AI arm solving the four-disk Tower of Hanoi, from the initial stack on the left rod to the goal stack on the right rod.">
-    </div>
-    <figcaption><strong>Fig. 3:</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi puzzle.</figcaption>
-  </figure>
-  <figure>
-    <div class="plate plate-wide">
-      <img src="assets/fig4_realworld_results.png" width="2183" height="541" alt="Bar chart of average task progress for Cosmos Policy, pi 0.5, V-JEPA 2-AC, V-JEPA 2-AC with manual subgoals, and VQ-WM across expert data H1, expert data H15, and non-expert data. VQ-WM reaches 100, 99.6 and 100 percent.">
-    </div>
-    <figcaption><strong>Fig. 4:</strong> Real-world results. VLA and WAM baselines without runtime search fail to extrapolate from short play subtasks to full-puzzle solutions, whereas VQ-WM composes local behaviors into complete plans and executes them reliably. V-JEPA 2-AC struggles even on H1, suggesting a limited effective planning horizon. V-JEPA 2-AC* receives manually specified subgoals that supply the solution sequence, leaving the model to perform local planning and control.</figcaption>
-  </figure>
-  <div class="prose">
-    <h3>Expert data</h3>
-    <p>
-      Trained on complete solution demonstrations, Cosmos Policy and &pi;<sub>0.5</sub> both reach 100% task progress
-      on single moves (H1) but drop to 76% and 23% on the full H15 puzzle as execution errors compound across disk
-      transfers. V-JEPA 2-AC optimizes action sequences with the cross-entropy method and reaches 0% on both: extending its
-      lookahead means searching longer sequences whose predicted outcomes grow unreliable, and intermediate puzzle moves do
-      not immediately bring the observed state closer to the goal. Hand-picking subgoal images raises it to 94%.
-      VQ-WM searches the shortest path through controller-aware latent abstractions, computes the complete solution in a
-      single planning call, and reaches 99.6% on H15.
-    </p>
-    <h3>Non-expert play data</h3>
-    <p>
-      Trained only on play-data subtasks of at most five moves, Cosmos Policy and &pi;<sub>0.5</sub> achieve 5% and 3%:
-      behavior cloning does not compose short subtasks into full H15 solutions. V-JEPA 2-AC* with manual subgoals improves
-      to 27%. VQ-WM achieves 100%, composing transitions it has seen into long-horizon plans and executing them reliably.
-    </p>
-  </div>
-</section>
-
 <!-- ================= SIMULATION ================= -->
-<section class="section section-alt" id="simulation">
+<section class="section" id="simulation">
   <div class="wrap">
     <p class="eyebrow">Simulation benchmarks</p>
     <h2>Manipulation and locomotion in Stable-WorldModel</h2>
@@ -273,10 +227,7 @@
           </p>
         </div>
         <figure class="walker-chart" id="walker-chart">
-          <div class="walker-head">
-            <figcaption><strong>Walker success rate (%)</strong>, mean &plusmn; std over seeds, by observation input.</figcaption>
-            <button class="walker-replay" id="walker-replay" type="button" aria-label="Replay animation">&#8635; Replay</button>
-          </div>
+          <figcaption><strong>Walker success rate (%)</strong>, mean &plusmn; std over seeds, by observation input.</figcaption>
           <ul class="walker-legend" aria-hidden="true">
             <li><i class="sw sw-base"></i>DINO-WM</li>
             <li><i class="sw sw-ours"></i>VQ-WM (ours)</li>
@@ -284,7 +235,7 @@
           <div class="walker-plot">
             <svg class="walker-svg" viewBox="0 0 480 330" role="img" aria-labelledby="walker-title walker-desc" font-family="var(--font-body)">
             <title id="walker-title">Walker success rate by observation input</title>
-            <desc id="walker-desc">Grouped columns. With images only, DINO-WM 12.7% and VQ-WM 22.0%. With images plus proprioception, DINO-WM 12.0% and VQ-WM 97.3%.</desc>
+            <desc id="walker-desc">Grouped columns. With images only, DINO-WM 12.7% and VQ-WM 22.0%. With images plus proprioception, DINO-WM 12.0% and VQ-WM 97.3%, a gain of 75.3 percentage points.</desc>
             <defs><clipPath id="walker-clip"><rect x="0" y="0" width="480" height="280"/></clipPath></defs>
             <line class="walker-grid walker-base" x1="44" x2="470" y1="280.0" y2="280.0"/>
             <text class="walker-tick" x="36" y="284.0" text-anchor="end">0%</text>
@@ -296,27 +247,27 @@
             <text class="walker-tick" x="36" y="104.0" text-anchor="end">75%</text>
             <line class="walker-grid" x1="44" x2="470" y1="40.0" y2="40.0"/>
             <text class="walker-tick" x="36" y="44.0" text-anchor="end">100%</text>
-            <text class="walker-cat" x="161" y="304" text-anchor="middle">Images</text>
-            <text class="walker-cat" x="351" y="304" text-anchor="middle">Images + proprioception</text>
+            <text class="walker-cat" x="151" y="304" text-anchor="middle">Images</text>
+            <text class="walker-cat" x="331" y="304" text-anchor="middle">Images + proprioception</text>
             <g clip-path="url(#walker-clip)">
-            <rect class="walker-bar walker-base-series" id="bar-dino-img" x="135" y="249.52" width="24" height="34.48" rx="4" data-value="12.7" data-std="3.4" data-series="DINO-WM" data-input="Images"/>
-            <rect class="walker-bar walker-ours" id="bar-vq-img" x="161" y="227.2" width="24" height="56.8" rx="4" data-value="22.0" data-std="5.9" data-series="VQ-WM" data-input="Images"/>
-            <rect class="walker-bar walker-base-series" id="bar-dino-pro" x="325" y="251.2" width="24" height="32.8" rx="4" data-value="12.0" data-std="4.9" data-series="DINO-WM" data-input="Images + proprioception"/>
-            <rect class="walker-bar walker-ours" id="bar-vq-pro" x="351" y="46.48" width="24" height="237.52" rx="4" data-value="97.3" data-std="2.5" data-series="VQ-WM" data-input="Images + proprioception"/>
+            <rect class="walker-bar walker-base-series" id="bar-dino-img" x="105" y="249.52" width="44" height="35.48" rx="5" data-value="12.7" data-std="3.4" data-series="DINO-WM" data-input="Images"/>
+            <rect class="walker-bar walker-ours" id="bar-vq-img" x="151" y="227.2" width="44" height="57.8" rx="5" data-value="22.0" data-std="5.9" data-series="VQ-WM" data-input="Images"/>
+            <rect class="walker-bar walker-base-series" id="bar-dino-pro" x="285" y="251.2" width="44" height="33.8" rx="5" data-value="12.0" data-std="4.9" data-series="DINO-WM" data-input="Images + proprioception"/>
+            <rect class="walker-bar walker-ours" id="bar-vq-pro" x="331" y="46.48" width="44" height="238.52" rx="5" data-value="97.3" data-std="2.5" data-series="VQ-WM" data-input="Images + proprioception"/>
             </g>
-            <g class="walker-err" id="err-dino-img"><line x1="147" x2="147" y1="241.36" y2="257.68"/><line x1="143" x2="151" y1="241.36" y2="241.36"/><line x1="143" x2="151" y1="257.68" y2="257.68"/></g>
-            <text class="walker-val" id="val-dino-img" x="147" y="234.36" text-anchor="middle" data-value="12.7">12.7%</text>
-            <g class="walker-err" id="err-vq-img"><line x1="173" x2="173" y1="213.04" y2="241.36"/><line x1="169" x2="177" y1="213.04" y2="213.04"/><line x1="169" x2="177" y1="241.36" y2="241.36"/></g>
-            <text class="walker-val" id="val-vq-img" x="173" y="206.04" text-anchor="middle" data-value="22.0">22.0%</text>
-            <g class="walker-err" id="err-dino-pro"><line x1="337" x2="337" y1="239.44" y2="262.96"/><line x1="333" x2="341" y1="239.44" y2="239.44"/><line x1="333" x2="341" y1="262.96" y2="262.96"/></g>
-            <text class="walker-val" id="val-dino-pro" x="337" y="232.44" text-anchor="middle" data-value="12.0">12.0%</text>
-            <g class="walker-err" id="err-vq-pro"><line x1="363" x2="363" y1="40.48" y2="52.48"/><line x1="359" x2="367" y1="40.48" y2="40.48"/><line x1="359" x2="367" y1="52.48" y2="52.48"/></g>
-            <text class="walker-val" id="val-vq-pro" x="363" y="33.48" text-anchor="middle" data-value="97.3">97.3%</text>
-            <g class="walker-delta" id="walker-delta"><path class="walker-delta-path" d="M 189 227.2 H 400 V 56.48"/><path class="walker-delta-head" d="M 395 62.48 L 400 54.48 L 405 62.48"/><text class="walker-delta-text" x="406" y="138.84" text-anchor="start">+75.3 pp</text></g>
-            <rect class="walker-hit" x="127" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-img" aria-label="DINO-WM, Images: 12.7 percent, plus or minus 3.4"/>
-            <rect class="walker-hit" x="153" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-img" aria-label="VQ-WM, Images: 22.0 percent, plus or minus 5.9"/>
-            <rect class="walker-hit" x="317" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-pro" aria-label="DINO-WM, Images + proprioception: 12.0 percent, plus or minus 4.9"/>
-            <rect class="walker-hit" x="343" y="40" width="40" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-pro" aria-label="VQ-WM, Images + proprioception: 97.3 percent, plus or minus 2.5"/>
+            <g class="walker-err" id="err-dino-img"><line x1="127.0" x2="127.0" y1="241.36" y2="257.68"/><line x1="122.0" x2="132.0" y1="241.36" y2="241.36"/><line x1="122.0" x2="132.0" y1="257.68" y2="257.68"/></g>
+            <text class="walker-val" id="val-dino-img" x="127.0" y="234.36" text-anchor="middle" data-value="12.7">12.7%</text>
+            <g class="walker-err" id="err-vq-img"><line x1="173.0" x2="173.0" y1="213.04" y2="241.36"/><line x1="168.0" x2="178.0" y1="213.04" y2="213.04"/><line x1="168.0" x2="178.0" y1="241.36" y2="241.36"/></g>
+            <text class="walker-val" id="val-vq-img" x="173.0" y="206.04" text-anchor="middle" data-value="22.0">22.0%</text>
+            <g class="walker-err" id="err-dino-pro"><line x1="307.0" x2="307.0" y1="239.44" y2="262.96"/><line x1="302.0" x2="312.0" y1="239.44" y2="239.44"/><line x1="302.0" x2="312.0" y1="262.96" y2="262.96"/></g>
+            <text class="walker-val" id="val-dino-pro" x="307.0" y="232.44" text-anchor="middle" data-value="12.0">12.0%</text>
+            <g class="walker-err" id="err-vq-pro"><line x1="353.0" x2="353.0" y1="40.48" y2="52.48"/><line x1="348.0" x2="358.0" y1="40.48" y2="40.48"/><line x1="348.0" x2="358.0" y1="52.48" y2="52.48"/></g>
+            <text class="walker-val" id="val-vq-pro" x="353.0" y="33.48" text-anchor="middle" data-value="97.3">97.3%</text>
+            <g class="walker-delta" id="walker-delta"><path class="walker-delta-path" id="walker-delta-path" d="M 200 204 C 240 130, 275 84, 322 64"/><path class="walker-delta-head" d="M 1 0 L -11 -6 L -11 6 Z" transform="translate(322 64) rotate(-23.1)"/><text class="walker-delta-text" x="236" y="104" text-anchor="end">+75.3 pp</text></g>
+            <rect class="walker-hit" x="101" y="40" width="52" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-img" aria-label="DINO-WM, Images: 12.7 percent, plus or minus 3.4"/>
+            <rect class="walker-hit" x="147" y="40" width="52" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-img" aria-label="VQ-WM, Images: 22.0 percent, plus or minus 5.9"/>
+            <rect class="walker-hit" x="281" y="40" width="52" height="240" fill="transparent" tabindex="0" role="button" data-bar="dino-pro" aria-label="DINO-WM, Images + proprioception: 12.0 percent, plus or minus 4.9"/>
+            <rect class="walker-hit" x="327" y="40" width="52" height="240" fill="transparent" tabindex="0" role="button" data-bar="vq-pro" aria-label="VQ-WM, Images + proprioception: 97.3 percent, plus or minus 2.5"/>
             </svg>
             <div class="walker-tip" id="walker-tip" role="status" aria-live="polite" hidden></div>
           </div>
@@ -336,6 +287,53 @@
         </figure>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= REAL WORLD ================= -->
+<section class="section section-alt" id="realworld">
+  <div class="wrap">
+  <p class="eyebrow">Real World</p>
+  <h2>Composing play data into a full Tower of Hanoi solution</h2>
+  <div class="prose">
+    <p>
+      A WidowX AI arm must move a four-disk stack to another rod, one disk at a time, never placing a larger disk
+      on a smaller one. The optimal solution takes 15 puzzle moves (H15) and minutes of execution with precise
+      grasping, alignment and disk insertion. Play data was collected autonomously at 30&nbsp;Hz: a symbolic planner
+      generated randomized legal move sequences from board states detected by the video object segmentation model
+      Cutie, and each transfer ran a predefined Cartesian pick-and-place.
+    </p>
+  </div>
+  <figure>
+    <div class="plate">
+      <img src="assets/fig3_realworld.png" width="1050" height="312" alt="Four photographs of a WidowX AI arm solving the four-disk Tower of Hanoi, from the initial stack on the left rod to the goal stack on the right rod.">
+    </div>
+    <figcaption><strong>Fig. 3:</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi puzzle.</figcaption>
+  </figure>
+  <figure>
+    <div class="plate plate-wide">
+      <img src="assets/fig4_realworld_results.png" width="2183" height="541" alt="Bar chart of average task progress for Cosmos Policy, pi 0.5, V-JEPA 2-AC, V-JEPA 2-AC with manual subgoals, and VQ-WM across expert data H1, expert data H15, and non-expert data. VQ-WM reaches 100, 99.6 and 100 percent.">
+    </div>
+    <figcaption><strong>Fig. 4:</strong> Real-world results. VLA and WAM baselines without runtime search fail to extrapolate from short play subtasks to full-puzzle solutions, whereas VQ-WM composes local behaviors into complete plans and executes them reliably. V-JEPA 2-AC struggles even on H1, suggesting a limited effective planning horizon. V-JEPA 2-AC* receives manually specified subgoals that supply the solution sequence, leaving the model to perform local planning and control.</figcaption>
+  </figure>
+  <div class="prose">
+    <h3>Expert data</h3>
+    <p>
+      Trained on complete solution demonstrations, Cosmos Policy and &pi;<sub>0.5</sub> both reach 100% task progress
+      on single moves (H1) but drop to 76% and 23% on the full H15 puzzle as execution errors compound across disk
+      transfers. V-JEPA 2-AC optimizes action sequences with the cross-entropy method and reaches 0% on both: extending its
+      lookahead means searching longer sequences whose predicted outcomes grow unreliable, and intermediate puzzle moves do
+      not immediately bring the observed state closer to the goal. Hand-picking subgoal images raises it to 94%.
+      VQ-WM searches the shortest path through controller-aware latent abstractions, computes the complete solution in a
+      single planning call, and reaches 99.6% on H15.
+    </p>
+    <h3>Non-expert play data</h3>
+    <p>
+      Trained only on play-data subtasks of at most five moves, Cosmos Policy and &pi;<sub>0.5</sub> achieve 5% and 3%:
+      behavior cloning does not compose short subtasks into full H15 solutions. V-JEPA 2-AC* with manual subgoals improves
+      to 27%. VQ-WM achieves 100%, composing transitions it has seen into long-horizon plans and executing them reliably.
+    </p>
+  </div>
   </div>
 </section>
 
@@ -392,10 +390,11 @@
 </footer>
 
 <script>
-/* Walker chart: bars grow from the baseline when scrolled into view. */
+/* Walker chart: bars grow from the baseline when scrolled into view, then an arrow draws the gain. */
 (function () {
   var chart = document.getElementById('walker-chart');
   if (!chart) return;
+  chart.classList.add('has-js');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var order = ['dino-img', 'vq-img', 'dino-pro', 'vq-pro'];
   var BASE = 280, SCALE = 2.4;
@@ -403,23 +402,34 @@
     return { bar: document.getElementById('bar-' + id), err: document.getElementById('err-' + id), val: document.getElementById('val-' + id) };
   });
   var delta = document.getElementById('walker-delta');
+  var arrow = document.getElementById('walker-delta-path');
+  var arrowLen = 0;
+  try { arrowLen = arrow.getTotalLength(); } catch (e) { arrowLen = 0; }
   var running = false, completed = false, lastTick = 0;
 
   function setBar(it, v) {
     it.bar.setAttribute('y', (BASE - SCALE * v).toFixed(2));
-    it.bar.setAttribute('height', (SCALE * v + 4).toFixed(2));
+    it.bar.setAttribute('height', (SCALE * v + 5).toFixed(2));
+  }
+  function hideArrow() {
+    if (arrowLen && !reduce) { arrow.style.strokeDasharray = arrowLen; arrow.style.strokeDashoffset = arrowLen; }
+    delta.classList.remove('is-on');
+  }
+  function showArrow() {
+    delta.classList.add('is-on');
+    arrow.style.strokeDashoffset = 0;
+    completed = true; running = false;
   }
   function reset() {
     items.forEach(function (it) { setBar(it, 0); it.err.style.opacity = 0; it.val.style.opacity = 0; it.val.textContent = '0.0%'; });
-    delta.classList.remove('is-on');
+    hideArrow();
   }
   function finish() {
     items.forEach(function (it) {
       var v = parseFloat(it.bar.getAttribute('data-value'));
       setBar(it, v); it.err.style.opacity = 1; it.val.style.opacity = 1; it.val.textContent = v.toFixed(1) + '%';
     });
-    delta.classList.add('is-on');
-    running = false; completed = true;
+    showArrow();
   }
   function ease(t) { return 1 - Math.pow(1 - t, 3); }
   function play() {
@@ -443,7 +453,7 @@
         it.err.style.opacity = t >= 1 ? 1 : 0;
       });
       if (!done) { requestAnimationFrame(frame); }
-      else { setTimeout(function () { delta.classList.add('is-on'); running = false; completed = true; }, 150); }
+      else { setTimeout(showArrow, 120); }
     }
     requestAnimationFrame(frame);
   }
@@ -454,21 +464,19 @@
   if ('IntersectionObserver' in window && !reduce) {
     var rect = chart.getBoundingClientRect();
     var onScreen = rect.top < window.innerHeight && rect.bottom > 0;
-    if (!onScreen) { reset(); armed = true; }
+    if (!onScreen) { reset(); armed = true; } else { hideArrow(); }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting && en.intersectionRatio >= 0.35) { io.disconnect(); if (armed) play(); else delta.classList.add('is-on'); }
+        if (en.isIntersecting && en.intersectionRatio >= 0.35) { io.disconnect(); if (armed) play(); else showArrow(); }
       });
     }, { threshold: [0.35] });
     io.observe(chart);
     // Safety net: never leave an empty chart if the observer never fires or frames stall.
     var guard = setInterval(function () {
       if (completed) { clearInterval(guard); return; }
-      if (armed && performance.now() - lastTick > 2500) { finish(); clearInterval(guard); }
+      if (performance.now() - lastTick > 2500) { finish(); clearInterval(guard); }
     }, 3000);
-  } else { delta.classList.add('is-on'); completed = true; }
-
-  document.getElementById('walker-replay').addEventListener('click', function () { running = false; play(); });
+  } else { showArrow(); }
 
   // Hover / focus tooltip on each bar's hit target.
   var tip = document.getElementById('walker-tip');
