@@ -72,38 +72,32 @@
 <!-- ================= HEADLINE RESULTS ================= -->
 <section class="results-band">
   <div class="wrap">
-    <p class="eyebrow">Headline results</p>
     <div class="results-grid">
       <article class="result">
-        <p class="result-setting">Real robot &middot; 15-move Tower of Hanoi &middot; trained on play data only</p>
-        <h3>Solves the full puzzle where VLA and WAM baselines fail</h3>
-        <p class="result-metric">Task progress</p>
+        <h3>Real-robot Tower of Hanoi</h3>
+        <p class="result-big">100<small>%</small><span class="result-metric">task progress, 15 moves, play data only</span></p>
         <ul class="hbars">
-        <li class="hb ours"><span class="hb-label">VQ-WM (ours)</span><span class="hb-track"><span class="hb-fill" style="width:100.0%"></span></span><span class="hb-val">100%</span></li>
-        <li class="hb"><span class="hb-label">Cosmos Policy</span><span class="hb-track"><span class="hb-fill" style="width:5.0%"></span></span><span class="hb-val">5%</span></li>
-        <li class="hb"><span class="hb-label">&pi;<sub>0.5</sub> (VLA)</span><span class="hb-track"><span class="hb-fill" style="width:3.0%"></span></span><span class="hb-val">3%</span></li>
-        <li class="hb"><span class="hb-label">V-JEPA 2-AC</span><span class="hb-track"><span class="hb-fill" style="width:0.0%"></span></span><span class="hb-val">0%</span></li>
+          <li class="hb ours"><span class="hb-label">VQ-WM</span><span class="hb-track"><span class="hb-fill" style="width:100.0%"></span></span><span class="hb-val">100</span></li>
+          <li class="hb"><span class="hb-label">Cosmos Policy</span><span class="hb-track"><span class="hb-fill" style="width:5.0%"></span></span><span class="hb-val">5</span></li>
+          <li class="hb"><span class="hb-label">&pi;<sub>0.5</sub></span><span class="hb-track"><span class="hb-fill" style="width:3.0%"></span></span><span class="hb-val">3</span></li>
         </ul>
       </article>
       <article class="result">
-        <p class="result-setting">Simulation &middot; Stable-WorldModel manipulation &middot; vs. H-JEPA</p>
-        <h3>Beats the strongest world-model planner, most on the longest task</h3>
-        <p class="result-metric">Success rate, VQ-WM vs. H-JEPA</p>
-        <ul class="hbars hbars-pairs">
-          <li class="pair"><span class="pair-name">Scene</span><span class="pair-bars"><span class="hb-fill ours" style="width:75.3%"></span><span class="hb-fill" style="width:40.7%"></span></span><span class="pair-vals"><b>75.3</b> vs 40.7</span></li>
-          <li class="pair"><span class="pair-name">Cube-Hard</span><span class="pair-bars"><span class="hb-fill ours" style="width:73.3%"></span><span class="hb-fill" style="width:60.0%"></span></span><span class="pair-vals"><b>73.3</b> vs 60.0</span></li>
-          <li class="pair"><span class="pair-name">Cube-Easy</span><span class="pair-bars"><span class="hb-fill ours" style="width:84.7%"></span><span class="hb-fill" style="width:76.7%"></span></span><span class="pair-vals"><b>84.7</b> vs 76.7</span></li>
+        <h3>Simulated manipulation</h3>
+        <p class="result-big">75.3<small>%</small><span class="result-metric">success on Scene, the longest task</span></p>
+        <ul class="hbars">
+          <li class="hb ours"><span class="hb-label">VQ-WM</span><span class="hb-track"><span class="hb-fill" style="width:75.3%"></span></span><span class="hb-val">75.3</span></li>
+          <li class="hb"><span class="hb-label">TS</span><span class="hb-track"><span class="hb-fill" style="width:47.3%"></span></span><span class="hb-val">47.3</span></li>
+          <li class="hb"><span class="hb-label">H-JEPA</span><span class="hb-track"><span class="hb-fill" style="width:40.7%"></span></span><span class="hb-val">40.7</span></li>
         </ul>
-        <p class="result-key"><i class="sw sw-ours"></i>VQ-WM <i class="sw sw-base"></i>H-JEPA</p>
       </article>
       <article class="result">
-        <p class="result-setting">Simulation &middot; Walker locomotion &middot; images + proprioception</p>
-        <h3>A better controller lifts planning without changing the planner</h3>
-        <p class="result-metric">Success rate</p>
+        <h3>Walker locomotion</h3>
+        <p class="result-big">97.3<small>%</small><span class="result-metric">success with proprioception</span></p>
         <ul class="hbars">
-        <li class="hb ours"><span class="hb-label">VQ-WM (ours)</span><span class="hb-track"><span class="hb-fill" style="width:97.3%"></span></span><span class="hb-val">97.3%</span></li>
-        <li class="hb"><span class="hb-label">VQ-WM w/o proprio</span><span class="hb-track"><span class="hb-fill" style="width:22.0%"></span></span><span class="hb-val">22%</span></li>
-        <li class="hb"><span class="hb-label">DINO-WM</span><span class="hb-track"><span class="hb-fill" style="width:12.0%"></span></span><span class="hb-val">12%</span></li>
+          <li class="hb ours"><span class="hb-label">VQ-WM</span><span class="hb-track"><span class="hb-fill" style="width:97.3%"></span></span><span class="hb-val">97.3</span></li>
+          <li class="hb"><span class="hb-label">w/o proprio</span><span class="hb-track"><span class="hb-fill" style="width:22.0%"></span></span><span class="hb-val">22</span></li>
+          <li class="hb"><span class="hb-label">DINO-WM</span><span class="hb-track"><span class="hb-fill" style="width:12.0%"></span></span><span class="hb-val">12</span></li>
         </ul>
       </article>
     </div>
