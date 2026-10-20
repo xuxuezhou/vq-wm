@@ -273,7 +273,19 @@
   <div class="wrap">
     <p class="eyebrow">Citation</p>
     <h2>BibTeX</h2>
-    <p class="bibtex-note">The BibTeX entry will be added when the preprint is public.</p>
+<pre class="bibtex" id="bib">@misc{xu2026vqwm,
+  title         = {Vector-Quantized World Model: Latent Feedback Motion Planning for Robot Manipulation},
+  author        = {Xu, Xuezhou and Wang, Chung-Pang and Li, Zhenzhen and Riviere, Benjamin},
+  year          = {2026},
+  eprint        = {2610.25600},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2610.25600}
+}</pre>
+    <div class="copy-row">
+      <button class="copy-btn" id="copy-bib" type="button">Copy BibTeX</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
   </div>
 </section>
 </main>
@@ -286,6 +298,27 @@
 </footer>
 
 <script>
+(function () {
+  var btn = document.getElementById('copy-bib');
+  var status = document.getElementById('copy-status');
+  var bib = document.getElementById('bib');
+  if (!btn || !bib) return;
+  btn.addEventListener('click', function () {
+    var text = bib.textContent;
+    function selectFallback() {
+      var range = document.createRange(); range.selectNodeContents(bib);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      status.textContent = 'Selected. Press Ctrl/Cmd+C to copy.';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        status.textContent = 'Copied.';
+        setTimeout(function () { status.textContent = ''; }, 2500);
+      }, selectFallback);
+    } else { selectFallback(); }
+  });
+})();
+
 /* Walker chart: bars grow from the baseline when scrolled into view, then an arrow draws the gain. */
 (function () {
   var chart = document.getElementById('walker-chart');
