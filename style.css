@@ -197,6 +197,22 @@ td .pm { color: var(--muted); font-weight: 400; font-size: 0.85em; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --chart-ours: #5b8ef0; --chart-base: #7a8aa0; --chart-grid: #26303d; } }
 :root[data-theme="dark"] { --chart-ours: #5b8ef0; --chart-base: #7a8aa0; --chart-grid: #26303d; }
 
+/* ablation chart (drawn, not an image) */
+.plate-chart { background: var(--surface); }
+.abl-chart { width: 100%; height: auto; display: block; }
+.ab-grid { stroke: var(--chart-grid); stroke-width: 1; }
+.ab-base { stroke: var(--line); }
+.ab-tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ab-axis { fill: var(--muted); font-size: 12px; }
+.ab-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ab-line.ab-fpt { stroke: var(--chart-ours); }
+.ab-line.ab-euc { stroke: var(--chart-base); }
+.ab-pt line { stroke: var(--fg); stroke-opacity: 0.55; stroke-width: 1.2; }
+.ab-pt circle, .ab-pt rect, .ab-legend circle, .ab-legend rect { stroke: var(--surface); stroke-width: 2; }
+.ab-pt.ab-fpt circle, .ab-legend .ab-fpt { fill: var(--chart-ours); }
+.ab-pt.ab-euc rect, .ab-legend .ab-euc { fill: var(--chart-base); }
+.ab-legend text { fill: var(--fg); font-size: 12px; }
+
 /* side by side figure + prose */
 .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 8px; }
 .split figure { margin: 0; }
