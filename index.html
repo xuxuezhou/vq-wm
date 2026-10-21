@@ -177,24 +177,24 @@
     <div class="cols">
       <div class="card">
         <h3>Planning <span class="rate rate-slow">slow</span></h3>
-        <p>Breadth-first search over vector-quantized states with the discrete predictor <span class="math">P<sub>Q</sub></span> returns the shortest code path from <span class="math">q<sub>init</sub></span> to <span class="math">q<sub>goal</sub></span>. One call plans about five minutes of robot execution in under a second.</p>
+        <p>Breadth-first search over vector-quantized states with the discrete predictor <span class="math">P<sub>Q</sub></span> returns the shortest path over vector-quantized states from <span class="math">q<sub>init</sub></span> to <span class="math">q<sub>goal</sub></span>. One call plans about five minutes of robot execution in under a second.</p>
       </div>
       <div class="card">
         <h3>Control <span class="rate rate-fast">fast</span></h3>
-        <p>A goal-conditioned controller <span class="math">&pi;(&middot; | z<sub>t</sub>, q<sub>i</sub>)</span> tracks each planned code every step from visual feedback, for the number of calls the first-passage-time estimate assigns to that transition.</p>
+        <p>A goal-conditioned controller <span class="math">&pi;(&middot; | z<sub>t</sub>, q<sub>i</sub>)</span> tracks each planned vector-quantized state every step from visual feedback, for the number of calls the first-passage-time estimate assigns to that transition.</p>
       </div>
     </div>
 
     <div class="defn">
-      <p><span class="term">First-passage time</span> <span class="math">d(z, z&prime;)</span>: the number of controller calls until a closed-loop rollout of <span class="math">&pi;</span> in the learned latent model first reaches <span class="math">z&prime;</span>. It replaces Euclidean distance for building the codebook and assigning states, so every code is a target the controller can actually reach.</p>
+      <p><span class="term">First-passage time</span> <span class="math">d(z, z&prime;)</span>: the number of controller calls until a closed-loop rollout of <span class="math">&pi;</span> in the learned latent model first reaches <span class="math">z&prime;</span>. It replaces Euclidean distance for building the codebook and assigning states, so every vector-quantized state is a target the controller can actually reach.</p>
     </div>
 
     <h3>Training</h3>
     <ol class="steps steps-row">
       <li><h4>Controller <span class="math">&pi;</span></h4><p>Goal-conditioned, trained on state&ndash;goal pairs up to <span class="math">R</span> steps apart with an <span class="math">L<sub>1</sub></span> action loss.</p></li>
       <li><h4>Latent predictor <span class="math">P<sub>Z</sub></span></h4><p>Supervised on closed-loop rollouts with <span class="math">&pi;</span>, the same procedure used to estimate first-passage time.</p></li>
-      <li><h4>State codebook <span class="math">Q</span></h4><p>Greedy set cover over estimated regions of attraction; each state maps to the code it reaches in the fewest calls.</p></li>
-      <li><h4>Discrete dynamics <span class="math">P<sub>Q</sub></span></h4><p>Action codebook and code-to-code predictor learned jointly from code transitions with cross-entropy and VQ losses.</p></li>
+      <li><h4>State codebook <span class="math">Q</span></h4><p>Greedy set cover over estimated regions of attraction; each latent state is assigned to the vector-quantized state it reaches in the fewest controller calls.</p></li>
+      <li><h4>Vector-quantized latent dynamics <span class="math">P<sub>Q</sub></span></h4><p>Latent action encoder, action codebook and discrete latent predictor learned jointly from vector-quantized transitions with cross-entropy and VQ losses.</p></li>
     </ol>
   </div>
 </section>
@@ -247,7 +247,7 @@
       <div class="plate plate-photo">
         <img src="assets/fig3_realworld.png" width="2400" height="700" alt="Four photographs of a WidowX AI arm solving the four-disk Tower of Hanoi, from the initial stack on the left rod to the goal stack on the right rod.">
       </div>
-      <figcaption><strong>Fig. 3:</strong> Real-world execution of VQ-WM on the four-disk Tower of Hanoi puzzle.</figcaption>
+      <figcaption><strong>Fig. 3:</strong> Real-world control of VQ-WM on the four-disk Tower of Hanoi puzzle.</figcaption>
     </figure>
     <figure>
       <div class="plate plate-wide">
@@ -268,14 +268,14 @@
       <ul>
         <li>First-passage time peaks near 90% success; Euclidean distance peaks at 40%.</li>
         <li>High success holds across codebook sizes from about 250 to 2000, an eightfold range.</li>
-        <li>Euclidean codes ignore reachability and switch targets on latent proximity, so plans stall or skip ahead.</li>
+        <li>Euclidean quantization ignores reachability and switches targets on latent proximity, so plans stall or skip ahead.</li>
       </ul>
     </div>
     <figure>
       <div class="plate plate-chart">
         <svg class="abl-chart" viewBox="0 0 520 330" role="img" aria-labelledby="abl-title abl-desc" font-family="var(--font-body)">
         <title id="abl-title">Success rate versus codebook size</title>
-        <desc id="abl-desc">First-passage-time quantization reaches 85 to 89 percent success between 427 and 1288 codes and drops at both extremes; Euclidean quantization peaks at 40 percent around 2037 codes. Three seeds, 50 trajectories each.</desc>
+        <desc id="abl-desc">First-passage-time quantization reaches 85 to 89 percent success between 427 and 1288 vector-quantized states and drops at both extremes; Euclidean quantization peaks at 40 percent around 2037 states. Three seeds, 50 trajectories each.</desc>
         <line class="ab-grid ab-base" x1="60" x2="500" y1="290.0" y2="290.0"/>
         <text class="ab-tick" x="52" y="294.0" text-anchor="end">0</text>
         <line class="ab-grid" x1="60" x2="500" y1="224.5" y2="224.5"/>
