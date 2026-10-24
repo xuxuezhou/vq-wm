@@ -86,7 +86,7 @@ h1.art .t-dash { display: inline-block; transform: translateY(-0.06em) scaleX(0.
 .authors sup { font-size: 0.7em; color: var(--muted); }
 .affils { margin: 0 0 6px; color: var(--muted); font-size: 0.95rem; }
 .affils-note { margin-bottom: 22px; font-size: 0.88rem; }
-.abstract { max-width: 76ch; margin: 0 0 40px; text-align: left; }
+.abstract { max-width: 76ch; margin: 0 0 32px; text-align: left; }
 .abstract .eyebrow { text-align: center; margin-bottom: 10px; }
 .abstract p:not(.eyebrow) { margin: 0; font-size: 1.02rem; line-height: 1.65; }
 .btn-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 32px; }
@@ -97,7 +97,7 @@ h1.art .t-dash { display: inline-block; transform: translateY(-0.06em) scaleX(0.
 .btn-primary:hover { filter: brightness(1.08); }
 .btn-disabled { color: var(--muted); cursor: default; border-style: dashed; }
 
-.video-frame { width: 100%; max-width: 960px; margin: 0 auto 36px; }
+.video-frame { width: 100%; max-width: 960px; margin: 0 auto 40px; }
 .video-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; max-width: 100%; border-radius: 12px; background: #000; }
 
 .hero-fig { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: center; }
